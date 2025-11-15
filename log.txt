@@ -3,3 +3,7 @@
 e92c32a (HEAD -> main, origin/main, origin/HEAD) Task 1.2
 7f3172e Task 1.1
 8f406fb Initial commit
+e8130cf (HEAD -> main, origin/main, origin/HEAD) Task 2.1
+e92c32a Task 1.2
+7f3172e Task 1.1
+8f406fb Initial commit
