@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class StatementPrinter {
     private Invoice invoice;
-    private static Map<String, Play> plays;
+    private Map<String, Play> plays;
 
     public StatementPrinter(Invoice invoice, Map<String, Play> plays) {
         this.setInvoice(invoice);
@@ -27,23 +27,25 @@ public class StatementPrinter {
         final StringBuilder result = new StringBuilder("Statement for "
                 + getInvoice().getCustomer() + System.lineSeparator());
 
-        final NumberFormat frmt = NumberFormat.getCurrencyInstance(Locale.US);
-
         for (Performance performance : getInvoice().getPerformances()) {
 
             volumeCredits += getVolumeCredits(performance);
 
             // print line for this order
-            result.append(String.format("  %s: %s (%s seats)%n", getPlay(performance).getName(), frmt.format(getAmount(performance)
-                    / Constants.PERCENT_FACTOR), performance.getAudience()));
+            result.append(String.format("  %s: %s (%s seats)%n", getPlay(performance).getName(),
+                    usd(getAmount(performance)), performance.getAudience()));
             totalAmount += getAmount(performance);
         }
-        result.append(String.format("Amount owed is %s%n", frmt.format(totalAmount / Constants.PERCENT_FACTOR)));
+        result.append(String.format("Amount owed is %s%n", usd(totalAmount)));
         result.append(String.format("You earned %s credits%n", volumeCredits));
         return result.toString();
     }
 
-    private static int getVolumeCredits(Performance performance) {
+    private static String usd(int totalAmount) {
+        return NumberFormat.getCurrencyInstance(Locale.US).format(totalAmount / Constants.PERCENT_FACTOR);
+    }
+
+    private int getVolumeCredits(Performance performance) {
         int result = 0;
         // add volume credits
         result += Math.max(performance.getAudience() - Constants.BASE_VOLUME_CREDIT_THRESHOLD, 0);
@@ -54,11 +56,11 @@ public class StatementPrinter {
         return result;
     }
 
-    private static Play getPlay(Performance performance) {
+    private Play getPlay(Performance performance) {
         return getPlays().get(performance.getPlayID());
     }
 
-    private static int getAmount(Performance performance) {
+    private int getAmount(Performance performance) {
         int result = 0;
         switch (getPlay(performance).getType()) {
             case "tragedy":
@@ -92,8 +94,8 @@ public class StatementPrinter {
         this.invoice = invoice;
     }
 
-    public static Map<String, Play> getPlays() {
-        return plays;
+    public Map<String, Play> getPlays() {
+        return this.plays;
     }
 
     public void setPlays(Map<String, Play> plays) {
